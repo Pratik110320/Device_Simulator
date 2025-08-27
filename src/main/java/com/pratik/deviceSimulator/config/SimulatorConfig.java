@@ -1,6 +1,7 @@
 package com.pratik.deviceSimulator.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public class SimulatorConfig {
         this.sensorTypes = sensorTypes;
         this.targetUrl = targetUrl;
     }
+    private String deviceRegistrationUrl; // optional override
+
+    public String getDeviceRegistrationUrl() { return deviceRegistrationUrl; }
+    public void setDeviceRegistrationUrl(String deviceRegistrationUrl) { this.deviceRegistrationUrl = deviceRegistrationUrl; }
 
     public String getTargetUrl() {
         return targetUrl;

@@ -12,27 +12,26 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+
 @Configuration
 public class RestTemplateConfig {
 
-    private final MappingJackson2HttpMessageConverter jacksonConverter;
 
-    public RestTemplateConfig(MappingJackson2HttpMessageConverter jacksonConverter) {
-        this.jacksonConverter = jacksonConverter;
-    }
+    @Bean(name = "customRestTemplate")
+    public RestTemplate restTemplate(ObjectMapper mapper) {
+        // Ensure ObjectMapper is configured for Java time
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+        MappingJackson2HttpMessageConverter converter =
+                new MappingJackson2HttpMessageConverter(mapper);
 
-        // Remove default Jackson converter
+        RestTemplate rt = new RestTemplate();
+        List<HttpMessageConverter<?>> converters = rt.getMessageConverters();
+
         converters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter);
+        converters.add(0, converter);
 
-        // Add custom one with JavaTimeModule
-        converters.add(jacksonConverter);
-
-        return restTemplate;
+        return rt;
     }
 }
-
